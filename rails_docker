@@ -1,0 +1,48 @@
+#!/bin/bash
+# This script runs a Docker container with an optional specified image tag
+# and passes arguments to 'rails' command.
+
+# Default value for Docker image tag
+default_image_tag="rails-docker"
+
+# Check if no arguments were provided
+if [ $# -eq 0 ]; then
+  echo "Usage: $0 -t TAG"
+  exit 1
+fi
+
+# Initialize image_tag as empty
+image_tag=""
+
+# if the -t ruby_version-rails_version flag is present, use the corresponding image
+while getopts ":t:" opt; do
+  case $opt in
+    t)
+      image_tag="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      echo "Usage: $0 -t TAG"
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      echo "Usage: $0 -t TAG"
+      exit 1
+      ;;
+  esac
+done
+
+# If the -t flag was not provided, use the default value
+if [ -z "$image_tag" ]; then
+  image_tag="$default_image_tag"
+fi
+
+# Check if Docker is installed
+if ! command -v docker &> /dev/null; then
+  echo "Docker is not installed. Please install Docker before running this script."
+  exit 1
+fi
+
+# Run the Docker container using the specified image tag and pass remaining arguments to 'rails' command
+docker run --rm -it -v $(pwd):/usr/src "$image_tag" rails "$@"

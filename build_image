@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Set config file variables
+json_file="config.json"
+ruby_image_key="RUBY_IMAGE_VERSION"
+rails_key="RAILS_VERSION"
+
+# Check if the JSON file exists
+if [ ! -f "$json_file" ]; then
+  echo "Error: JSON file '$json_file' does not exist."
+  exit 1
+fi
+
+# Read the JSON file line by line
+while IFS= read -r line; do
+  # Check if the line contains the ruby key
+  if [[ "$line" =~ "\"$ruby_image_key\"" ]]; then
+    # Extract the value by removing leading and trailing spaces and quotes
+    ruby_version=$(echo "$line" | sed 's/^[[:space:]]*//' | sed 's/[",[:space:]]//g' | cut -d ':' -f 2)
+  fi
+   # Check if the line contains the rails key
+  if [[ "$line" =~ "\"$rails_key\"" ]]; then
+    # Extract the value by removing leading and trailing spaces and quotes
+    rails_version=$(echo "$line" | sed 's/^[[:space:]]*//' | sed 's/[",[:space:]]//g' | cut -d ':' -f 2)
+  fi
+done < "$json_file"
+
+# Set the values to "latest" if empty
+if [ -z "$ruby_version" ]; then
+  ruby_version="latest"
+fi
+if [ -z "$rails_version" ]; then
+  rails_version="latest"
+fi
+
+# Output the values to the console
+echo "Ruby image version: $ruby_version"
+echo "Rails version: $rails_version"
+
+docker build -t rails-docker -t "rails-docker-$ruby_version-$rails_version" \
+  --build-arg "ruby_image_version=$ruby_version" .
