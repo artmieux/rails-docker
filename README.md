@@ -72,7 +72,7 @@ This only has to be repeated if changes are made to the rails-docker script
 To create a new rails project in your local directory, run:
 
 ```sh
-rails_docker [-t ruby_v-rails_v] new myproject --skip-bundle [other flags and parameters for rails new]
+rails_docker [-t ruby_v-rails_v] new myproject --skip-bundle [other flags and params]
 cd myproject
 bundle install
 ```
