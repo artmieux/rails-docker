@@ -24,7 +24,7 @@ cd rails_docker
 Ensure that the scripts build_image and rails_docker are set to be executable:
 
 ```sh
-chmod +x build_image rails_docker
+chmod +x build-image rails-docker
 ```
 
 ### Specifying versions
