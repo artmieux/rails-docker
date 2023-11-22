@@ -2,9 +2,9 @@
 
 ### Dockerfile and scripts for creating Ruby on Rails apps using a Docker image
 
-Using Bundler and Ruby version managers like rbenv we can track and install the exact ruby and gems versions that we need for our projects. Nevertheless, when creating a new Rails application we might not have the exact Ruby and Rails versions we want to use installed on our system, and it can be cumbersome to install and mantain these versions for the sole purpose of creating new projects.
+Leveraging Bundler and Ruby version managers such as rbenv facilitates tracking and installation of required Ruby and gem versions for our projects. However, initializing a new Rails application may pose challenges if the desired Ruby and Rails versions are not already installed, requiring additional effort to manage these versions solely for project initiation.
 
-This repository provides a Dockerfile and a set of scripts that allow us to easily build a Docker image and use it to create new Rails apps.
+This project offers a Dockerfile and accompanying scripts, streamlining the process of building a Docker image. This image enables seamless creation of new Rails applications without the need for maintaining specific Ruby and Rails versions on the local system.
 
 ## Getting Started
 
