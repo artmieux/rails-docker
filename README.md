@@ -15,13 +15,13 @@ Make sure you have [Docker Desktop](https://docs.docker.com/desktop/) installed
 To begin, clone this repository to your local machine:
 
 ```sh
-git clone git@github.com:artmieussens/rails_docker.git
-cd rails_docker
+git clone git@github.com:artmieussens/rails-docker.git
+cd rails-docker
 ```
 
 ### Making Scripts Executable
 
-Ensure that the scripts build_image and rails_docker are set to be executable:
+Ensure that the scripts build-image and rails-docker are set to be executable:
 
 ```sh
 chmod +x build-image rails-docker
@@ -72,7 +72,7 @@ This only has to be repeated if changes are made to the rails-docker script
 To create a new rails project in your local directory, run:
 
 ```sh
-rails_docker [-t ruby_v-rails_v] new myproject --skip-bundle [other flags and params]
+rails-docker [-t ruby_v-rails_v] new myproject --skip-bundle [other flags and params]
 cd myproject
 bundle install
 ```
@@ -81,10 +81,10 @@ bundle install
 
 ## Running rails on a container
 
-Rails can be run within a commands other than new
+Rails can be run invoking a command other than new
 
 ```sh
-rails_docker [-t ruby_v-rails_v] rails_command [rails_command_parameters]
+rails-docker [-t ruby_v-rails_v] rails_command [rails_command_parameters]
 ```
 
 This will run rails on the latest created image, or on the image tagged as rails-docker-ruby_v-rails_v if the -t option is used, passing all the parameters and options provided at the end
