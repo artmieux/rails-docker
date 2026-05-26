@@ -1,39 +1,40 @@
 #!/bin/bash
+set -euo pipefail
 
-# Set config file variables
 json_file="config.json"
-ruby_image_key="RUBY_IMAGE_VERSION"
-rails_key="RAILS_VERSION"
 
-# Check if the JSON file exists
+usage() {
+  cat <<EOF
+Usage: $0 [-h]
+
+Build a Docker image with Ruby and Rails installed, as configured in
+$json_file. The image is tagged as both rails-docker (latest) and
+rails-docker-<ruby_v>-<rails_v>.
+
+Options:
+  -h   Show this help message
+EOF
+  exit 0
+}
+
+while getopts ":h" opt; do
+  case $opt in
+    h) usage ;;
+    \?) echo "Invalid option: -$OPTARG" >&2; usage ;;
+  esac
+done
+
 if [ ! -f "$json_file" ]; then
-  echo "Error: JSON file '$json_file' does not exist."
+  echo "Error: $json_file not found." >&2
   exit 1
 fi
 
-# Read the JSON file line by line
-while IFS= read -r line; do
-  # Check if the line contains the ruby key
-  if [[ "$line" =~ "\"$ruby_image_key\"" ]]; then
-    # Extract the value by removing leading and trailing spaces and quotes
-    ruby_version=$(echo "$line" | sed 's/^[[:space:]]*//' | sed 's/[",[:space:]]//g' | cut -d ':' -f 2)
-  fi
-   # Check if the line contains the rails key
-  if [[ "$line" =~ "\"$rails_key\"" ]]; then
-    # Extract the value by removing leading and trailing spaces and quotes
-    rails_version=$(echo "$line" | sed 's/^[[:space:]]*//' | sed 's/[",[:space:]]//g' | cut -d ':' -f 2)
-  fi
-done < "$json_file"
+ruby_version=$(jq -r '.RUBY_IMAGE_VERSION // ""' "$json_file")
+rails_version=$(jq -r '.RAILS_VERSION // ""' "$json_file")
 
-# Set the values to "latest" if empty
-if [ -z "$ruby_version" ]; then
-  ruby_version="latest"
-fi
-if [ -z "$rails_version" ]; then
-  rails_version="latest"
-fi
+ruby_version="${ruby_version:-latest}"
+rails_version="${rails_version:-latest}"
 
-# Output the values to the console
 echo "Ruby image version: $ruby_version"
 echo "Rails version: $rails_version"
 
