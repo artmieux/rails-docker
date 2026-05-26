@@ -1,90 +1,87 @@
 # Rails Docker
 
-### Dockerfile and scripts for creating Ruby on Rails apps using a Docker image
+Generate new Rails apps without installing Ruby or Rails locally.
 
-Leveraging Bundler and Ruby version managers such as rbenv facilitates tracking and installation of required Ruby and gem versions for our projects. However, initializing a new Rails application may pose challenges if the desired Ruby and Rails versions are not already installed, requiring additional effort to manage these versions solely for project initiation.
+Bootstrap a Rails project using a Docker image — no need to install Ruby, rbenv, or match gem versions on your machine just to run `rails new`.
 
-This project offers a Dockerfile and accompanying scripts, streamlining the process of building a Docker image. This image enables seamless creation of new Rails applications without the need for maintaining specific Ruby and Rails versions on the local system.
+## Prerequisites
+
+- [Docker Desktop](https://docs.docker.com/desktop/)
+- [jq](https://jqlang.github.io/jq/) — a lightweight JSON processor (install via `brew install jq` on macOS)
 
 ## Getting Started
 
-Make sure you have [Docker Desktop](https://docs.docker.com/desktop/) installed
-
-### Cloning the repository
-
-To begin, clone this repository to your local machine:
+Clone this repository to your local machine:
 
 ```sh
-git clone git@github.com:artmieussens/rails-docker.git
+git clone git@github.com:artmiex/rails-docker.git
 cd rails-docker
 ```
 
-### Making Scripts Executable
-
-Ensure that the scripts build-image and rails-docker are set to be executable:
+Make the scripts executable:
 
 ```sh
 chmod +x build-image rails-docker
 ```
 
-### Specifying versions
+## Specifying versions
 
-By default, the latest Docker Ruby image and Rails version will be used, but the config.json file can be used to specify the Ruby image, Ruby, and Rails versions to be used.
-
-For example:
+Edit `config.json` to pin versions. Empty values default to `latest`.
 
 ```json
 {
-  "RUBY_IMAGE_VERSION":     "3.0.0",
-  "RUBY_VERSION":           "3.0.0",
-  "RAILS_VERSION":          "7.0.0"
+  "RUBY_IMAGE_VERSION":   "3.0.0",
+  "RUBY_VERSION":         "3.0.0",
+  "RAILS_VERSION":        "7.0.0"
 }
 ```
 
-Any of these values set to an empty string will use the 'latest' version.
+- **`RUBY_IMAGE_VERSION`** — which `ruby:x.y.z` base image Docker pulls.
+- **`RUBY_VERSION`** — writes `ruby 'x.y.z'` into the Gemfile so Bundler enforces it at runtime.
+- **`RAILS_VERSION`** — the Rails gem version installed in the image.
 
-> If the RUBY_VERSION is specified, it must match the RUBY_IMAGE VERSION value, as the Rails installation on the image will require that specific Ruby version to be used.
+`RUBY_IMAGE_VERSION` and `RUBY_VERSION` are independent. You can pin one without the other. If `RUBY_VERSION` is set, it must match `RUBY_IMAGE_VERSION` or Bundler will refuse to install.
 
 ## Building the Docker image
 
-Executing this command will build a new Docker Ruby image and install Rails on it 
-
 ```sh
-./build-image
+./build-image [-h]
 ```
 
-The Docker image will be tagged both as rails-docker-[ruby_version]-[rails_version] and as rails-docker, so specific images can be run with the long tags and rails-docker will always referr to the latest image created
+This builds a new Docker Ruby image with Rails installed. The image is tagged as both `rails-docker` (convenience alias for the latest build) and `rails-docker-<ruby_v>-<rails_v>` (versioned, so multiple configurations can coexist).
+
+Pass `-h` to see usage details.
 
 ## Installing the rails-docker script
 
-Copying the rails-docker script into a directory included in your $PATH will allow it to be used from within any directory
-
-For example:
+Copy the `rails-docker` script into a directory on your `$PATH` so it can be used from any directory:
 
 ```sh
 sudo cp rails-docker /usr/local/bin
 ```
 
-This only has to be repeated if changes are made to the rails-docker script
+This only needs to be repeated if the script itself is updated.
 
-## Creating a new Rails App
-
-To create a new rails project in your local directory, run:
+## Creating a new Rails app
 
 ```sh
-rails-docker [-t ruby_v-rails_v] new myproject --skip-bundle [other flags and params]
+rails-docker [-t ruby_v-rails_v] [-h] new myproject --skip-bundle
 cd myproject
 bundle install
 ```
 
-> the --skip-bundle option is recommended to avoid compiling issues when compiling from a container in certain platforms. Running bundler locally on the project's folder avoids these issues.
+Use `-t` to select a specific versioned image (matching the tag suffix from `build-image`). The `rails-docker-` prefix is added automatically.
 
-## Running rails on a container
+> The `--skip-bundle` option is recommended to avoid compilation issues when compiling from a container on certain platforms. Running `bundle install` locally on the project folder avoids these issues.
 
-Rails can be run invoking a command other than new
+## Running other Rails commands
+
+Any Rails command can be invoked, not just `new`:
 
 ```sh
 rails-docker [-t ruby_v-rails_v] rails_command [rails_command_parameters]
 ```
 
-This will run rails on the latest created image, or on the image tagged as rails-docker-ruby_v-rails_v if the -t option is used, passing all the parameters and options provided at the end
+This runs the command inside the latest image (or the versioned image if `-t` is used), passing all arguments through to `rails`.
+
+Pass `-h` to see usage details.
