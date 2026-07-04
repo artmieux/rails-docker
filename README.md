@@ -1,8 +1,22 @@
 # Rails Docker
 
-Generate new Rails apps without installing Ruby or Rails locally.
+Run any Rails command without installing Ruby or Rails locally — generators, migrations, console, and more.
 
-Bootstrap a Rails project using a Docker image — no need to install Ruby, rbenv, or match gem versions on your machine just to run `rails new`.
+```sh
+# Bootstrap a new Rails project (most common)
+rails-docker new myapp --skip-bundle
+
+# Generate a scaffold
+rails-docker generate scaffold Post title:string body:text
+
+# Run migrations
+rails-docker db:migrate
+
+# Open a Rails console
+rails-docker console
+```
+
+Use a single Docker image — no need to install Ruby, rbenv, or match gem versions on your machine.
 
 ## Prerequisites
 
@@ -18,7 +32,7 @@ git clone git@github.com:artmiex/rails-docker.git
 cd rails-docker
 ```
 
-Make the scripts executable:
+Ensure the scripts are executable:
 
 ```sh
 chmod +x build-image rails-docker
@@ -40,7 +54,7 @@ Edit `config.json` to pin versions. Empty values default to `latest`.
 - **`RUBY_VERSION`** — writes `ruby 'x.y.z'` into the Gemfile so Bundler enforces it at runtime.
 - **`RAILS_VERSION`** — the Rails gem version installed in the image.
 
-`RUBY_IMAGE_VERSION` and `RUBY_VERSION` are independent. You can pin one without the other. If `RUBY_VERSION` is set, it must match `RUBY_IMAGE_VERSION` or Bundler will refuse to install.
+`RUBY_IMAGE_VERSION` and `RUBY_VERSION` are independently configurable but must be compatible when both are set. You can pin one without the other. If `RUBY_VERSION` is specified, it must not exceed `RUBY_IMAGE_VERSION` (or Bundler will refuse to install). A typical pattern: leave `RUBY_IMAGE_VERSION` empty (pulls `latest`) and set `RUBY_VERSION` to pin the Gemfile constraint.
 
 ## Building the Docker image
 
@@ -48,7 +62,7 @@ Edit `config.json` to pin versions. Empty values default to `latest`.
 ./build-image [-h] [-p PLATFORM]
 ```
 
-This builds a new Docker Ruby image with Rails installed. The image is tagged as both `rails-docker` (convenience alias for the latest build) and `rails-docker-<ruby_v>-<rails_v>` (versioned, so multiple configurations can coexist).
+This builds a Docker Ruby image with Rails installed. The image is tagged as both `rails-docker` (convenience alias for the latest build) and `rails-docker-<ruby_v>-<rails_v>` (versioned, so multiple configurations can coexist).
 
 Use `-p` to set the target platform (e.g. `linux/amd64` for Apple Silicon Macs to avoid native gem compilation issues). Pass `-h` to see usage details.
 
