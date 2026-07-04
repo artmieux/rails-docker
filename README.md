@@ -18,6 +18,12 @@ rails-docker console
 
 Use a single Docker image — no need to install Ruby, rbenv, or match gem versions on your machine.
 
+## Motivation
+
+Bundler already manages a Rails project's dependencies — every generated project ships with its own `Gemfile` and `Gemfile.lock`. You don't need Rails installed globally; you just need a Ruby environment to run `rails new` once.
+
+Rails Docker provides exactly that: a thin Docker image with Ruby and the Rails gem. Use it to bootstrap the project, then `cd` into it and let Bundler take over. The gems in the image are only used to generate the project — after that, your local Bundler installs whatever the project's `Gemfile` specifies.
+
 ## Prerequisites
 
 - [Docker Desktop](https://docs.docker.com/desktop/)
