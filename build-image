@@ -15,22 +15,27 @@ fi
 
 usage() {
   cat <<EOF
-Usage: $0 [-h]
+Usage: $0 [-h] [-p PLATFORM]
 
 Build a Docker image with Ruby and Rails installed, as configured in
 $json_file. The image is tagged as both rails-docker (latest) and
 rails-docker-<ruby_v>-<rails_v>.
 
 Options:
-  -h   Show this help message
+  -h          Show this help message
+  -p PLATFORM  Set Docker platform (e.g. linux/amd64, linux/arm64)
 EOF
   exit 0
 }
 
-while getopts ":h" opt; do
+platform=""
+
+while getopts ":hp:" opt; do
   case $opt in
     h) usage ;;
+    p) platform="$OPTARG" ;;
     \?) echo "Invalid option: -$OPTARG" >&2; usage ;;
+    :)  echo "Option -$OPTARG requires an argument." >&2; exit 1 ;;
   esac
 done
 
@@ -48,5 +53,7 @@ rails_version="${rails_version:-latest}"
 echo "Ruby image version: $ruby_version"
 echo "Rails version: $rails_version"
 
-docker build -t rails-docker -t "rails-docker-$ruby_version-$rails_version" \
+docker build \
+  ${platform:+--platform "$platform"} \
+  -t rails-docker -t "rails-docker-$ruby_version-$rails_version" \
   --build-arg "ruby_image_version=$ruby_version" .

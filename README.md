@@ -45,12 +45,12 @@ Edit `config.json` to pin versions. Empty values default to `latest`.
 ## Building the Docker image
 
 ```sh
-./build-image [-h]
+./build-image [-h] [-p PLATFORM]
 ```
 
 This builds a new Docker Ruby image with Rails installed. The image is tagged as both `rails-docker` (convenience alias for the latest build) and `rails-docker-<ruby_v>-<rails_v>` (versioned, so multiple configurations can coexist).
 
-Pass `-h` to see usage details.
+Use `-p` to set the target platform (e.g. `linux/amd64` for Apple Silicon Macs to avoid native gem compilation issues). Pass `-h` to see usage details.
 
 ## Installing the rails-docker script
 
